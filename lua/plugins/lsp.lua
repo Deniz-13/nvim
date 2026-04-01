@@ -16,7 +16,6 @@ return {
 	},
 
 	config = function()
-		-- 1. Görsel Ayarlar
 		vim.diagnostic.config({
 			virtual_text = true,
 			severity_sort = true,
@@ -37,7 +36,6 @@ return {
 			},
 		})
 
-		-- 2. LspAttach (Keymapler ve Vurgulama)
 		vim.api.nvim_create_autocmd("LspAttach", {
 			group = vim.api.nvim_create_augroup("my.lsp", { clear = true }),
 			callback = function(args)
@@ -77,25 +75,35 @@ return {
 			end,
 		})
 
-		-- 3. Mason ve Araç Kurulumları (LSP dışı araçlar)
+		local formatters = {
+			"stylua",
+			"shfmt",
+			"prettier",
+			"clang-format",
+			"shellcheck",
+			"ruff",
+			"php-cs-fixer",
+		}
+
+		local lsp = {
+			"lua_ls",
+			"rust_analyzer",
+			"gopls",
+			"bashls",
+			"basedpyright",
+			"intelephense",
+			"ts_ls",
+		}
+
 		require("fidget").setup({})
 		require("mason").setup()
 
 		require("mason-tool-installer").setup({
-			ensure_installed = {
-				"stylua",
-				"shfmt",
-				"prettier",
-				"clang-format",
-				"shellcheck",
-				"ruff", -- Python formatter
-				"php-cs-fixer", -- PHP formatter
-			},
+			ensure_installed = formatters,
 			auto_update = true,
 			run_on_start = true,
 		})
 
-		-- 4. Mason-Lspconfig (LSP Sunucuları)
 		local cmp_lsp = require("cmp_nvim_lsp")
 		local capabilities = vim.tbl_deep_extend(
 			"force",
@@ -105,15 +113,7 @@ return {
 		)
 
 		require("mason-lspconfig").setup({
-			ensure_installed = {
-				"lua_ls",
-				"rust_analyzer",
-				"gopls",
-				"bashls",
-				"basedpyright",
-				"intelephense",
-				"ts_ls",
-			},
+			ensure_installed = lsp,
 			automatic_installation = true,
 			handlers = {
 				function(server_name)
